@@ -31,6 +31,11 @@ private:
     QString directory;
     bool wasUpdated;
 
+    bool isFolder(const QString &path);
+    bool isWavFile(const QString &path);
+
+    void fillDirectory(const QString &directory);
+
     //PyObject *pName, *pModule, *pFunc, *pArgs;
 
 private Q_SLOTS:

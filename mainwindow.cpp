@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(ui->actionMonitor_Path, SIGNAL(triggered()), selectPathDialog, SLOT(exec()));
     QObject::connect(selectPathDialog, SIGNAL(accepted()), this, SLOT(setMonitorPath()));
-
     QObject::connect(ui->monitorButton, SIGNAL(clicked()), this, SLOT(toggleMonitoring()));
 }
 
@@ -57,7 +56,10 @@ void MainWindow::directoryUpdated(const QString & path)
     if(!newFile.isEmpty() && !deleteFile.isEmpty()) {
         //File/Dir is renamed
         if(newFile.count() == 1 && deleteFile.count() == 1) {
-            ui->console->append("File renamed from " + deleteFile.first() + " to " + newFile.first());
+            if(isFolder(path + "/" + newFile.first()))
+                ui->console->append("Folder renamed from " + deleteFile.first() + " to " + newFile.first());
+            if(isWavFile(path + "/" + newFile.first()))
+                ui->console->append("File renamed from " + deleteFile.first() + " to " + newFile.first());
             dirWatcher->removePath(path + "/" + deleteFile.first());
             dirWatcher->addPath(path + "/" + newFile.first());
             wasUpdated = true;
@@ -69,41 +71,37 @@ void MainWindow::directoryUpdated(const QString & path)
         } else {
             QFileInfo file(path);
             QString name = file.fileName();
-            ui->console->append("The File " + name + " has been updated.");
+            if(isWavFile(file.absoluteFilePath()))
+                ui->console->append("File " + name + " has been updated.");
         }
     } else {
         //New File/Dir added to Dir
         if(!newFile.isEmpty()) {
             for(int i = 0; i < newFile.size(); i++) {
-                ui->console->append("New File added: " + newFile.at(i));
+                if(isFolder(path + "/" + newFile.at(i))) //TODO
+                    ui->console->append("New Folder added: " + newFile.at(i));
+                if(isWavFile(path + "/" + newFile.at(i)))
+                    ui->console->append("New File added: " + newFile.at(i));
                 dirWatcher->addPath(path + "/" + newFile.at(i));
             }
         }
+        //File/Dir is deleted
         if(!deleteFile.isEmpty()) {
             for(int i = 0; i < deleteFile.size(); i++) {
-                ui->console->append("File deleted: " + deleteFile.at(i));
+                if(!deleteFile.at(i).contains("."))
+                    ui->console->append("Folder deleted: " + deleteFile.at(i));
+                if(deleteFile.at(i).endsWith(".txt"))
+                    ui->console->append("File deleted: " + deleteFile.at(i));
                 dirWatcher->removePath(path + "/" + deleteFile.at(i));
             }
             wasUpdated = true;
         }
     }
-    ui->console->append("");
-    QStringList files = dirWatcher->files();
-    QStringList dirs = dirWatcher->directories();
-    for(int i = 0; i < files.size(); i++)
-        ui->console->append("Files:" + files.at(i));
-    for(int i = 0; i < dirs.size(); i++)
-        ui->console->append("Dirs: " + dirs.at(i));
-    ui->console->append("");
 }
 
 void MainWindow::fileUpdated(const QString & path)
 {
-    //ui->console->append("fileUpdated " + path);
     directoryUpdated(path);
-    /*QFileInfo file(path);
-    QString name = file.fileName();
-    ui->console->append("The File " + name + " has been updated.");*/
 }
 
 void MainWindow::toggleMonitoring()
@@ -123,13 +121,7 @@ void MainWindow::toggleMonitoring()
 
         QFileInfo f(directory);
         if(f.isDir()) {
-            const QDir dirw(directory);
-            QStringList files = dirw.entryList(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files, QDir::DirsFirst); //QDir::AllDirs, QDir::DirsFirst
-            currentContents[directory] = files;
-            for(int i = 0; i < files.size(); i++) {
-                dirWatcher->addPath(directory + "/" + files.at(i));
-                ui->console->append("Added File/Folder: " + directory + "/" + files.at(i));
-            }
+            fillDirectory(directory);
         }
     } else {
         ui->console->append("Stopped");
@@ -137,4 +129,32 @@ void MainWindow::toggleMonitoring()
         dirWatcher->removePath(directory);
         currentContents.clear();
     }
+}
+
+void MainWindow::fillDirectory(const QString &directory)
+{
+    const QDir dirw(directory);
+    QStringList files = dirw.entryList(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files, QDir::DirsFirst); //QDir::AllDirs, QDir::DirsFirst
+    currentContents[directory] = files;
+    for(int i = 0; i < files.size(); i++) {
+        dirWatcher->addPath(directory + "/" + files.at(i));
+        if(isFolder(directory + "/" + files.at(i))) {
+            ui->console->append("Added Folder: " + directory + "/" + files.at(i));
+            fillDirectory(directory + "/" + files.at(i));
+        }
+        if(isWavFile(directory + "/" + files.at(i)))
+            ui->console->append("Added File: " + directory + "/" + files.at(i));
+    }
+}
+
+bool MainWindow::isFolder(const QString &path)
+{
+    QFileInfo info(path);
+    return info.isDir();
+}
+
+bool MainWindow::isWavFile(const QString &path)
+{
+    QFileInfo info(path);
+    return info.isFile() && info.suffix() == "txt";
 }
