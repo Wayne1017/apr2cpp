@@ -31,9 +31,76 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="monitorButton">
+       <widget class="QLabel" name="firstLabel">
         <property name="text">
-         <string>Start monitoring</string>
+         <string>1.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="modelButton">
+        <property name="text">
+         <string>Load Model</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="secondLabel">
+        <property name="text">
+         <string>2.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pathButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Select Path</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="thirdLabel">
+        <property name="text">
+         <string>3.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="monitorButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Start Monitoring</string>
         </property>
        </widget>
       </item>
@@ -59,6 +126,13 @@
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -67,20 +141,18 @@
      <x>0</x>
      <y>0</y>
      <width>537</width>
-     <height>26</height>
+     <height>17</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionMonitor_Path"/>
-   </widget>
-   <addaction name="menuFile"/>
   </widget>
   <action name="actionMonitor_Path">
    <property name="text">
     <string>Monitor Path</string>
+   </property>
+  </action>
+  <action name="actionLoad_Model">
+   <property name="text">
+    <string>Load Model</string>
    </property>
   </action>
  </widget>

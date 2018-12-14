@@ -1,12 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-//#include "Python.h"
+#include <iostream>
 #include <QMainWindow>
-#include <QFileDialog>
-#include <QFileSystemWatcher>
-#include <QMap>
-#include <QStringList>
+#include "brosethread.h"
 
 using namespace std;
 
@@ -25,24 +22,19 @@ public:
 private:
     Ui::MainWindow *ui;
     QFileDialog *selectPathDialog;
-    QFileSystemWatcher *dirWatcher;
-    QMap<QString, QStringList> currentContents;
+    QFileDialog *selectModelDialog;
 
     QString directory;
     bool wasUpdated;
 
-    bool isFolder(const QString &path);
-    bool isWavFile(const QString &path);
+    BroseThread *bThread;
 
-    void fillDirectory(const QString &directory);
-
-    //PyObject *pName, *pModule, *pFunc, *pArgs;
-
-private Q_SLOTS:
+private slots:
     void setMonitorPath();
+    void loadModel();
     void toggleMonitoring();
-    void directoryUpdated(const QString &path);
-    void fileUpdated(const QString &path);
+    void receiveConsoleMsg(const QString msg);
+    void receiveProgressUpdate(int currFrame, int frames);
 };
 
 #endif // MAINWINDOW_H

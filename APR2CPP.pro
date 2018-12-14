@@ -13,17 +13,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    brosethread.cpp \
+    AudioFile-master/AudioFile.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    brosethread.h \
+    AudioFile-master/AudioFile.h
 
 FORMS    += mainwindow.ui
 
-CONFIG += no_keywords # Python redefines some qt keywords
+win32: LIBS += -L$$PWD/../../apr2dll/apr2dll/Release/ -lbroseAPR
 
-INCLUDEPATH += C:\Python27\include
-
-LIBS     += C:\Python27\libs\python27.lib
-
-DISTFILES += \
-    main.py
+INCLUDEPATH += $$PWD/../../apr2dll/apr2dll/apr2dll
+DEPENDPATH += $$PWD/../../apr2dll/apr2dll/apr2dll
